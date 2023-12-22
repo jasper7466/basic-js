@@ -23,11 +23,57 @@ const { NotImplementedError } = require('../extensions/index.js');
  *  [1, 1, 1]
  * ]
  */
-function minesweeper(/* matrix */) {
-  throw new NotImplementedError('Not implemented');
-  // remove line with error and write your code here
+function minesweeper(matrix) {
+  const field = {
+    sizeX: matrix[0].length,
+    sizeY: matrix.length,
+    field: new Array(matrix.length)
+      .fill()
+      .map(() => new Array(matrix[0].length).fill(0)),
+  };
+
+  for (let y = 0; y < field.sizeY; y++) {
+    for (let x = 0; x < field.sizeX; x++) {
+      if (matrix[y][x] === true) {
+        const neighbors = getNeighbors(field, x, y);
+        for (const neighbor of neighbors) {
+          field.field[neighbor.y][neighbor.x]++;
+        }
+      }
+    }
+  }
+
+  return field.field;
+}
+
+function getNeighbors(field, x, y) {
+  const offsets = [
+    { x: 0, y: 1 },
+    { x: 1, y: 1 },
+    { x: 1, y: 0 },
+    { x: 0, y: -1 },
+    { x: -1, y: 0 },
+    { x: -1, y: -1 },
+    { x: -1, y: 1 },
+    { x: 1, y: -1 },
+  ];
+
+  const neighbors = [];
+
+  for (const offset of offsets) {
+    const guessX = x + offset.x;
+    const guessY = y + offset.y;
+    const isValidX = guessX < field.sizeX && guessX >= 0;
+    const isValidY = guessY < field.sizeY && guessY >= 0;
+
+    if (isValidX && isValidY) {
+      neighbors.push({ x: guessX, y: guessY });
+    }
+  }
+
+  return neighbors;
 }
 
 module.exports = {
-  minesweeper
+  minesweeper,
 };
